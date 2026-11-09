@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#5d3df2">
+<meta name="application-name" content="KhelyIA V2.2">
 <meta name="description" content="KhelyIA, un compagnon d'apprentissage local pour les élèves du CP à la Terminale.">
 <title>KhelyIA · Apprendre à son rythme</title>
 <style>
@@ -71,6 +72,164 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,3vw,34px);line-height:1.18;lette
 .qcm-confirm-actions .btn{min-height:46px}
 .qcm-confirm-abandon{background:#fff0f4;border:1px solid #f2c9d2;color:#a33255}
 @media(max-width:480px){.qcm-confirm-actions{flex-direction:column}.qcm-confirm-actions .btn{width:100%}}
+
+/* KhelyIA V2.2 — design system, harmonisation non destructive des interfaces. */
+:root{
+  --ink:#20233d;--muted:#656b82;--purple:#5541db;--purple2:#7060eb;
+  --turq:#13b7ac;--bg:#f7f8fd;--line:#e8eaf2;--white:#fff;
+  --shadow:0 12px 32px rgba(34,35,84,.052);--radius:20px;
+  --focus:#25cabc;
+}
+html{scroll-padding-top:28px}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:-.008em;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.app{grid-template-columns:262px minmax(0,1fr)}
+.sidebar{padding:30px 17px 24px;border-color:#e9e9f1;box-shadow:2px 0 22px rgba(28,28,70,.018)}
+.brand{gap:13px;padding:3px 11px 31px}
+.brand-mark{border-radius:15px;box-shadow:0 7px 17px rgba(75,57,197,.18);background:linear-gradient(142deg,#5841db 20%,#19b9b0 100%)}
+.brand-name{font-size:23px;color:#4936c9;letter-spacing:-1.05px}
+.brand-sub{font-size:11px;color:#858aa0}
+.sidebar-label{letter-spacing:1.55px;color:#868ba2;padding:0 16px 10px}
+.nav{gap:6px}
+.nav-btn{min-height:46px;border-radius:12px;color:#555b73;font-weight:720;font-size:13px;padding:12px 15px;transition:background .18s ease,color .18s ease,transform .18s ease}
+.nav-btn:hover{background:#f2f0ff;color:#5038d8;transform:translateX(2px)}
+.nav-btn.active{color:#4f39d2;background:#eeebff;box-shadow:inset 3px 0 #6550ea}
+.nav-btn .icon{stroke-width:2}
+.sidebar-bottom{padding:17px 12px 0}
+.local-chip{color:#23877e}
+.sidebar-note{color:#7e8498;font-size:11.5px}
+.main{padding:30px clamp(24px,4vw,60px) 55px;max-width:1570px}
+.topbar{margin-bottom:25px;min-height:45px}
+.breadcrumbs{color:#777d95;font-size:12px;letter-spacing:.1px}
+.date-label{color:#777d94}
+.avatar{background:#eae6ff;color:#513bd1;border:1px solid #fff;box-shadow:0 5px 15px rgba(55,40,116,.10)}
+h1,h2,h3{color:#24233e;font-weight:820}
+h1{font-size:clamp(28px,3vw,36px);letter-spacing:-1.15px;line-height:1.16}
+h2{font-size:20px;letter-spacing:-.55px}
+h3{letter-spacing:-.25px}
+.page-intro{margin-bottom:24px}
+.page-intro p{color:#686d83;max-width:760px;font-size:14px}
+.hero{min-height:246px;background:linear-gradient(116deg,#5039ce 0%,#6650e5 68%,#7464ec 100%);border:1px solid rgba(255,255,255,.16);border-radius:25px;padding:37px 39px;box-shadow:0 19px 38px rgba(87,64,213,.14)}
+.hero:before{border-color:rgba(255,255,255,.055)}
+.hero:after{background:rgba(22,188,176,.19)}
+.hero .eyebrow{font-size:11px;letter-spacing:1.9px;color:#e4ddff}
+.hero h1{font-size:clamp(31px,3.3vw,40px);margin:9px 0 12px;font-weight:840;letter-spacing:-1.45px}
+.hero p{font-size:14px;color:#f1eeff;line-height:1.65;max-width:570px;margin-bottom:22px}
+.hero-art{opacity:.8}
+.btn{min-height:43px;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:760;transition:background .16s ease,transform .16s ease,box-shadow .16s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active,.action-card:active{transform:translateY(0) scale(.992)}
+.btn-primary{background:var(--purple);color:#fff;box-shadow:0 7px 18px rgba(84,65,219,.20)}
+.btn-primary:hover{background:#4932cb;box-shadow:0 10px 24px rgba(84,65,219,.24)}
+.btn-white{background:white;color:#4e37cf}
+.btn-outline{background:white;border:1px solid #dcddec;color:#4e40ac}
+.btn-outline:hover{border-color:#aaa4df;background:#fbfaff}
+.btn-quiet{background:#eeebff;color:#5037cb}
+.btn-turq{background:#e6f8f6;color:#087c75;box-shadow:none}
+.btn-sm{min-height:36px;padding:8px 12px}
+.text-link{color:#5341c7;font-size:12px}
+.text-link:hover{text-decoration:underline;text-underline-offset:3px}
+.section-head{margin:32px 0 17px}
+.section-head h2{font-size:21px;line-height:1.28}
+.action-grid{gap:17px}
+.action-card{min-height:181px;border:1px solid #e9eaf3;border-radius:19px;padding:21px 22px;gap:12px;box-shadow:0 9px 24px rgba(35,37,92,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.action-card:hover{border-color:#cbc6f7;box-shadow:0 16px 32px rgba(43,39,102,.09);transform:translateY(-3px)}
+.action-card strong{font-size:15px;color:#292b44;font-weight:790}
+.action-card small{font-size:12.5px;color:#626981;line-height:1.65}
+.action-icon{border-radius:14px;background:#eeebff;color:#5642d4}
+.action-icon.turq{background:#e5f7f5;color:#118c84}
+.action-icon.orange{background:#f0edff;color:#6b53de}
+.dashboard-bottom{gap:19px;margin-top:20px}
+.panel{background:#fff;border:1px solid #e9ebf2;border-radius:19px;padding:24px;box-shadow:var(--shadow)}
+.panel-head{margin-bottom:19px}
+.stat-block{background:#f7f6fd;border:1px solid #f1effa;border-radius:13px;padding:16px 13px}
+.stat-block strong{color:#4936c9;font-weight:830}
+.stat-block span{color:#6f7489;font-size:11px}
+.empty{background:#f9f9fe;color:#6e7489;padding:26px 20px;border:1px dashed #e6e4f3;border-radius:13px}
+.empty:before{content:"✦";display:block;font-size:21px;color:#9f92ed;line-height:1.2;margin-bottom:5px}
+.tag{background:#f0eeff;color:#5a48c8;border-radius:9px;font-weight:760}
+.tag.turq{background:#e5f8f5;color:#12837b}
+.tag.orange{background:#f0eeff;color:#6250cc}
+.subject-pill{background:#f2efff;color:#5144a5;font-size:12px}
+.roadmap{background:#f8f7fd;color:#656980;border:1px solid #eeecf8}
+.roadmap strong{color:#5041b4}
+.field label{font-weight:730;color:#4d536c;font-size:12px}
+.field input,.field select,.field textarea{border:1px solid #dfe3ed;border-radius:12px;min-height:46px;font-size:13.5px;transition:border-color .15s ease,box-shadow .15s ease}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#8373e9;box-shadow:0 0 0 3px rgba(103,85,231,.09)}
+.disclaimer{background:#f8f7ff;border-color:#ebe9fa;color:#666780;line-height:1.6}
+.suggestion{border-color:#e4dff9;background:#fbfaff;color:#5143b8}
+.suggestion:hover,.subject-choice:hover{border-color:#b4a8f5;background:#f5f1ff}
+.chat-panel{border-radius:20px;box-shadow:var(--shadow)}
+.chat-head{background:#fff;border-color:#e9eaf2}
+.chat-controls{background:#fff}
+.chat-stream{background:#fcfcff}
+.chat-bubble{line-height:1.7}
+.qcm-card{border-color:#e6e7f4}
+.answer-btn{border:1px solid #e3e5ef;border-radius:12px;background:#fff;min-height:52px;transition:background .14s ease,border-color .14s ease,transform .14s ease}
+.answer-btn:hover:not(:disabled){border-color:#a89bf4;background:#faf9ff}
+.answer-btn.selected{background:#f2efff;border-color:#6e5bdf}
+.answer-btn.correct{background:#eaf7f1;color:#176d54;border-color:#6dc5a0}
+.answer-btn.incorrect{background:#fff0f2;color:#a34251;border-color:#e49aaa}
+.progress-bar{background:#eeeef6;border-radius:99px;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,#6450e8,#7561ef);border-radius:99px;transition:width .28s ease}
+.metric{border-color:#e9ebf2;box-shadow:0 4px 15px rgba(42,37,89,.03)}
+.metric strong{color:#3b356f}
+.month-box{background:#f8f8fc;border:1px solid #ececf5}
+.parent-hero{background:linear-gradient(112deg,#352d8e,#5945d7 70%,#6f60e8);border-radius:24px;box-shadow:0 14px 30px rgba(59,46,157,.12)}
+.parent-hero h1{color:white}
+.parent-card{border-color:#e8e9f3;box-shadow:0 7px 20px rgba(29,27,74,.04);border-radius:17px}
+.parent-card strong{color:#523ed2;overflow-wrap:anywhere}
+.tutorial-overlay,.qcm-confirm-overlay{backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.tutorial-card,.qcm-confirm-card{border:1px solid rgba(255,255,255,.65);box-shadow:0 30px 75px rgba(28,20,72,.25)}
+.tutorial-content p{color:#5e637b}
+.tutorial-tip{color:#167d74}
+.toast{background:#29234c;max-width:min(355px,calc(100vw - 32px));border-radius:13px;box-shadow:0 16px 35px rgba(25,20,72,.26)}
+.footer{color:#767b8f;font-size:11px;line-height:1.7}
+.demo-badge{font-size:10px;font-weight:790;letter-spacing:.7px;text-transform:uppercase;padding:7px 9px;background:#f1efff;color:#5943c6;border-radius:8px;white-space:nowrap}
+@media(max-width:1180px){.main{padding-left:27px;padding-right:27px}}
+@media(max-width:900px){.app{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:23px 9px}.brand{padding:2px 0 28px}.nav-btn:hover{transform:none}.main{padding:26px 24px 54px}}
+@media(max-width:650px){
+  html{scroll-padding-bottom:95px}
+  .app{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
+  .sidebar{height:calc(75px + env(safe-area-inset-bottom,0px));padding:7px 5px calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid #e7e8f0;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 -7px 26px rgba(40,39,91,.08)}
+  .nav{gap:1px}
+  .nav-btn{min-width:0;min-height:56px;flex:1;padding:8px 2px 7px;gap:4px;border-radius:12px;font-size:10px}
+  .nav-btn span{font-size:10px;line-height:1.12;font-weight:750}
+  .nav-btn .icon{height:21px;width:21px}
+  .nav-btn.active{box-shadow:inset 0 -3px #6c56ee;background:#f0ecff}
+  .main{padding:17px 16px 26px}
+  .topbar{min-height:40px;margin-bottom:18px;gap:7px}
+  .breadcrumbs{font-size:11px}
+  .top-actions{gap:6px}
+  .top-actions .btn-sm{padding:7px 9px;min-height:36px}
+  .avatar{height:37px;width:37px}
+  .demo-badge{display:none}
+  .hero{min-height:238px;padding:28px 24px;border-radius:23px}
+  .hero h1{font-size:30px}
+  .hero p{font-size:13.5px;line-height:1.7;max-width:97%}
+  .hero-art{right:0;opacity:.14}
+  .section-head{margin-top:29px}
+  .section-head h2{font-size:20px}
+  .action-grid{gap:12px}
+  .action-card{padding:17px;min-height:158px;gap:10px}
+  .action-card:last-child{min-height:120px}
+  .action-card strong{font-size:14px}
+  .action-card small{font-size:12px}
+  .dashboard-bottom{gap:16px}
+  .panel{padding:19px;border-radius:18px}
+  .chat-panel{padding:0}
+  .chat-stream{padding:18px 14px}
+  .qcm-card{padding:20px}
+  .field input,.field select{min-height:48px}
+  .btn{min-height:44px}
+  .parent-hero{padding:25px 21px}
+  .parent-card{padding:15px}
+  .toast{bottom:calc(87px + env(safe-area-inset-bottom,0px));left:16px;right:16px;margin:auto;text-align:center}
+}
+@media(max-width:380px){.main{padding-left:12px;padding-right:12px}.nav-btn span{font-size:9px}.hero{padding:25px 19px}.section-head h2{font-size:18px}.action-card{padding:13px}.topbar .breadcrumbs{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
@@ -104,7 +263,7 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,3vw,34px);line-height:1.18;lette
  <div class="sidebar-bottom"><div class="local-chip"><span class="dot"></span> Données enregistrées localement</div><div class="sidebar-note">Version découverte · Un appareil · Sans identifiant sécurisé · Sans frais.</div></div>
 </aside>
 <main class="main">
- <header class="topbar"><div class="breadcrumbs">MON ESPACE <span style="color:#cac8d4;margin:0 7px">/</span> <span id="breadcrumb-name">Accueil</span></div><div class="top-actions"><span class="date-label" id="today"></span><button class="btn btn-outline btn-sm role-toggle" id="role-toggle" type="button">Espace parent</button><button class="btn btn-outline btn-sm" id="help-tutorial" type="button" aria-label="Ouvrir le tutoriel de KhelyIA">? Aide</button><button class="avatar" id="avatar" title="Mon profil" aria-label="Ouvrir mon profil">E</button></div></header>
+ <header class="topbar"><div class="breadcrumbs">MON ESPACE <span style="color:#cac8d4;margin:0 7px">/</span> <span id="breadcrumb-name">Accueil</span></div><div class="top-actions"><span class="demo-badge" title="Version de démonstration : pas encore de compte sécurisé ni d’IA connectée">Mode démo</span><span class="date-label" id="today"></span><button class="btn btn-outline btn-sm role-toggle" id="role-toggle" type="button">Espace parent</button><button class="btn btn-outline btn-sm" id="help-tutorial" type="button" aria-label="Ouvrir le tutoriel de KhelyIA">? Aide</button><button class="avatar" id="avatar" title="Mon profil" aria-label="Ouvrir mon profil">E</button></div></header>
  <section id="page-home" class="page active">
   <div class="hero"><div style="position:relative;z-index:2"><div class="eyebrow">TON ESPACE POUR PROGRESSER</div><h1>Bonjour <span id="greeting-name">à toi</span> ! <span aria-hidden="true">✦</span></h1><p>Du CP à la Terminale : une question, un exercice ou un défi ? Avance à ton rythme avec des entraînements adaptés.</p><button class="btn btn-white" data-go="chat">Commencer à apprendre <svg class="icon"><use href="#ico-arrow"/></svg></button></div><div class="hero-art" aria-hidden="true"><div class="bubble2"></div><div class="bubble1"></div><div class="smile">:)</div></div></div>
   <div class="section-head"><h2>Qu'aimerais-tu faire aujourd'hui ?</h2><button class="text-link" id="home-tutorial" type="button">Voir le tutoriel</button></div>
@@ -153,7 +312,7 @@ h1,h2,h3,p{margin-top:0}h1{font-size:clamp(25px,3vw,34px);line-height:1.18;lette
   <div class="page-intro"><h1>Mon profil</h1><p>Personnalise ton expérience et conserve les résultats sur cet appareil.</p></div>
   <div class="profile-area"><div class="panel"><div class="panel-head"><h2>Informations d'apprentissage</h2><span class="action-icon" style="width:40px;height:40px"><svg class="icon"><use href="#ico-user"/></svg></span></div><form id="profile-form"><div class="fieldset"><div class="field"><label for="profile-name">Prénom ou pseudonyme</label><input id="profile-name" maxlength="28" placeholder="Ex. Alex" autocomplete="off"></div><div class="field"><label for="profile-level">Classe</label><select id="profile-level"></select></div><div class="field"><label for="profile-year">Année scolaire</label><input id="profile-year" placeholder="2026-2027" pattern="[0-9]{4}-[0-9]{4}" maxlength="9" required></div><div class="field"><label for="profile-language">Langue d'interface</label><select id="profile-language"><option value="fr">Français (version 1)</option></select></div></div><p class="helper">Pour protéger la vie privée, utilise un pseudonyme plutôt que ton nom complet.</p><div class="profile-actions"><button class="btn btn-primary" type="submit">Enregistrer mon profil</button></div></form></div><div class="panel" style="margin-top:18px"><div class="panel-head"><h2>Mes données</h2><svg class="icon" style="color:#5b4de1"><use href="#ico-shield"/></svg></div><p class="muted" style="font-size:13px">Tes notes, ton profil et ta conversation sont conservés seulement dans le stockage de ce navigateur. Ils ne sont pas synchronisés entre appareils. Ils peuvent disparaître si tu effaces les données du navigateur.</p><div class="profile-actions"><button class="btn btn-outline" id="export-all" type="button"><svg class="icon"><use href="#ico-download"/></svg> Sauvegarder au format JSON</button><button class="btn btn-quiet" id="clear-chat" type="button">Effacer la conversation</button><button class="btn btn-quiet" id="clear-notes" type="button" style="color:#af4562;background:#fff0f4">Effacer les notes</button></div></div><div class="disclaimer" style="margin-top:18px">KhelyIA V2 est une démonstration. Elle n'utilise pas de service d'IA en ligne. Avant de publier un service utilisé par des mineurs, il faudra prévoir une information adaptée, les règles de consentement applicables, la protection des comptes et une politique de confidentialité.</div></div>
  </section>
- <footer class="footer">KhelyIA V2.1 · Prototype éducatif gratuit · Contenu pédagogique à vérifier · Version HTML locale</footer>
+ <footer class="footer">KhelyIA V2.2 · Prototype éducatif gratuit · Contenu pédagogique à vérifier · Version HTML locale</footer>
 </main>
 </div>
 <div id="tutorial-modal" class="tutorial-overlay" role="dialog" aria-modal="true" aria-labelledby="tutorial-title" aria-describedby="tutorial-body" hidden>
