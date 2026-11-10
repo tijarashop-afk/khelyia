@@ -8,6 +8,7 @@ import unittest
 from pathlib import Path
 
 MIGRATION = Path(__file__).resolve().parents[1] / "migrations/0001_auth_v3.sql"
+NOTES_MIGRATION = Path(__file__).resolve().parents[1] / "migrations/0002_parent_notes.sql"
 
 
 class ParentSchemaTests(unittest.TestCase):
@@ -15,6 +16,7 @@ class ParentSchemaTests(unittest.TestCase):
         self.db = sqlite3.connect(":memory:")
         self.db.execute("PRAGMA foreign_keys=ON")
         self.db.executescript(MIGRATION.read_text(encoding="utf-8"))
+        self.db.executescript(NOTES_MIGRATION.read_text(encoding="utf-8"))
 
     def tearDown(self):
         self.db.close()
@@ -100,6 +102,52 @@ class ParentSchemaTests(unittest.TestCase):
             self.db.execute("SELECT failed_count,blocked_until FROM parent_auth_attempts").fetchone(),
             (1, None),
         )
+
+
+    def test_notes_are_owned_by_parent_and_deleted_on_account_removal(self):
+        self.create_parent()
+        self.create_parent("p2", "parent2@example.invalid")
+        sql = (
+            "INSERT INTO parent_notes(id,parent_id,subject,level,score,max_score,recorded_at)"
+            " VALUES(?,?,?,?,?,?,?)"
+        )
+        self.db.execute(sql, ("n1", "p1", "math", "CM1", 17, 20, 12345))
+        self.db.execute(sql, ("n2", "p2", "fr", "6e", 13, 20, 12346))
+        rows = self.db.execute(
+            "SELECT id,subject,level,score,max_score,recorded_at "
+            "FROM parent_notes WHERE parent_id=? ORDER BY recorded_at DESC, id DESC LIMIT 100",
+            ("p1",)
+        ).fetchall()
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0][0], "n1")
+        self.db.execute("DELETE FROM parents WHERE id=?", ("p1",))
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM parent_notes WHERE parent_id=?", ("p1",)
+        ).fetchone()[0], 0)
+        self.assertEqual(self.db.execute(
+            "SELECT count(*) FROM parent_notes WHERE parent_id=?", ("p2",)
+        ).fetchone()[0], 1)
+
+    def test_notes_cannot_reference_unknown_parent_or_invalid_subject_score(self):
+        self.create_parent()
+        sql = (
+            "INSERT INTO parent_notes(id,parent_id,subject,level,score,max_score,recorded_at)"
+            " VALUES(?,?,?,?,?,?,?)"
+        )
+        invalid_rows = [
+            ("bad1", "unknown", "math", "CM1", 12, 20, 100),
+            ("bad2", "p1", "science", "CM1", 12, 20, 100),
+            ("bad3", "p1", "math", "invented", 12, 20, 100),
+            ("bad4", "p1", "math", "CM1", 21, 20, 100),
+            ("bad5", "p1", "math", "CM1", -2, 20, 100),
+            ("bad6", "p1", "math", "CM1", 10, 30, 100),
+            ("bad7", "p1", "math", "CM1", 10.5, 20, 100),
+        ]
+        for row in invalid_rows:
+            with self.subTest(id=row[0]):
+                with self.assertRaises(sqlite3.IntegrityError):
+                    self.db.execute(sql, row)
+        self.assertEqual(self.db.execute("SELECT count(*) FROM parent_notes").fetchone()[0], 0)
 
 if __name__ == "__main__":
     unittest.main()
