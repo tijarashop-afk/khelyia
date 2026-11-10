@@ -33,7 +33,9 @@ Application d'aide aux devoirs en français, **du CP à la Terminale**. Interfac
 - **Tests automatisés du projet :** `node --test tests/*.test.mjs`
 - **Contrôle syntaxique des modules serveur :** `node --check src/server/parent-auth.mjs` et `node --check src/server/parent-api.mjs`
 - **Tests de schéma SQLite :** `python3 -m unittest discover -s tests -p 'test_*.py'`
-- **CI GitHub :** `.github/workflows/checks.yml` exécute les tests Node, Python et les contrôles syntaxiques.
+- **CI GitHub :** `.github/workflows/checks.yml` exécute les tests Node (API, page), Python/SQLite et les contrôles syntaxiques.
+- **Notes V3 :** les routes `/api/parent/notes` doivent prendre le propriétaire depuis la session serveur, jamais depuis un identifiant envoyé par le client. Préserver l'isolation GET/POST/DELETE et la suppression des notes à la suppression du compte.
+- La page `parent-v3.html` reste une **prévisualisation sur branche** : ne pas la brancher sur la version publique tant que les comptes parent ne sont pas opérationnels.
 - **Déploiement :** Cloudflare Pages est actuellement alimenté par publication manuelle ; ne **pas** présumer que GitHub déploie automatiquement.
 
 ## Reprises et erreurs
