@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#5541DB">
+<!-- Indiquer ici uniquement l’identifiant public obtenu depuis Formspree (ex: abcdefgh). Aucun email personnel ni mot de passe. -->
+<meta name="khelyia-formspree-id" content="">
 <meta name="description" content="Contacter l'équipe KhelyIA pour une question, un problème ou une proposition.">
 <title>Contact — KhelyIA</title>
 <style>
@@ -48,7 +50,7 @@ footer{text-align:center;font-size:13px;color:var(--muted);padding:20px}
 <section class="card" aria-labelledby="contact-title">
 <span class="eyebrow">Nous contacter</span>
 <h1 id="contact-title">Une question sur KhelyIA&nbsp;?</h1>
-<p class="muted intro">Utilise ce formulaire pour une demande d'information, un problème technique ou une proposition de collaboration. Le message sera transmis à l'équipe KhelyIA par email lorsque le service d'envoi sera configuré.</p>
+<p class="muted intro">Utilise ce formulaire pour une demande d'information, un problème technique ou une proposition de collaboration. Le message sera transmis à l'équipe KhelyIA par email dès que le service de réception sera configuré.</p>
 <form id="contact-form" novalidate>
 <div class="grid">
  <div><label for="name">Votre nom *</label><input id="name" name="name" autocomplete="name" minlength="2" maxlength="80" required></div>
@@ -65,12 +67,12 @@ footer{text-align:center;font-size:13px;color:var(--muted);padding:20px}
 <textarea id="message" name="message" minlength="15" maxlength="3000" required placeholder="Expliquez votre demande, sans inclure d'informations personnelles concernant un enfant."></textarea>
 <div class="hp" aria-hidden="true"><label for="website">Laisser vide</label><input type="text" name="website" id="website" tabindex="-1" autocomplete="off"></div>
 <h2>Protection de vos informations</h2>
-<p class="note">Le nom, l'adresse email et le message servent uniquement à traiter votre demande. Ils sont transmis à la messagerie de réception KhelyIA par Cloudflare et ne sont pas enregistrés dans une base de données par ce formulaire. Ils peuvent rester dans la boîte email du destinataire. N'envoyez ni mots de passe, ni notes, ni noms ou documents d'enfants. Ce formulaire s'adresse aux adultes.</p>
+<p class="note">Le nom, l'adresse email et le message servent uniquement à traiter votre demande. Ils sont transmis à la messagerie KhelyIA via le fournisseur de formulaire configuré (Cloudflare ou Formspree). Avec Formspree, ils peuvent être conservés dans l'historique du fournisseur pendant 30 jours sur l'offre gratuite, en plus de la boîte email du destinataire. N'envoyez ni mots de passe, ni notes, ni noms ou documents d'enfants. Ce formulaire s'adresse aux adultes.</p>
 <div class="checkbox"><input id="privacy" name="privacy" type="checkbox" required><label for="privacy">J'ai lu les informations ci-dessus et j'accepte d'être recontacté(e) à propos de ma demande. *</label></div>
 <div id="turnstile" aria-label="Vérification anti-spam"></div>
 <button type="submit" id="send" disabled>Envoyer mon message</button>
 <p id="status" class="status" role="status" aria-live="polite" hidden></p>
-<p class="note">* Champs obligatoires. Aucun message n'est transmis si la vérification anti-spam ou l'envoi échoue.</p>
+<p class="note">* Champs obligatoires. La protection anti-spam dépend du fournisseur choisi. Le message n'est confirmé qu'après une réponse positive de celui-ci.</p>
 </form>
 </section>
 </main>
@@ -83,15 +85,27 @@ const status=$('status');
 let token='';
 let sending=false;
 let ready=false;
+let provider='cloudflare';
+const formspreeId=(document.querySelector('meta[name="khelyia-formspree-id"]')?.content||'').trim();
+const formspreeReady=/^[a-zA-Z0-9]{8,16}$/.test(formspreeId);
 function notice(message,isError=true){
   status.textContent=message;
   status.className='status '+(isError?'error':'ok');
   status.hidden=false;
 }
 function updateButton(){
-  send.disabled=!ready||!token||sending;
+  send.disabled=!ready||(provider==='cloudflare'&&!token)||sending;
 }
 async function initialize(){
+  if(formspreeReady){
+    // Formspree : adresse Gmail définie uniquement depuis le compte du propriétaire.
+    // Le domaine d'expédition est géré par Formspree, sans DNS propre à KhelyIA.
+    provider='formspree';
+    ready=true;
+    $('turnstile').hidden=true;
+    updateButton();
+    return;
+  }
   try{
     const response=await fetch('/api/contact',{credentials:'same-origin',cache:'no-store'});
     if(!response.ok)throw new Error('Service indisponible');
@@ -119,26 +133,39 @@ async function initialize(){
 }
 form.addEventListener('submit',async event=>{
   event.preventDefault();
-  if(sending||!ready||!token)return;
+  if(sending||!ready||(provider==='cloudflare'&&!token))return;
   if(!form.reportValidity())return;
   sending=true;updateButton();
   notice("Envoi en cours…",false);
   try{
-    const response=await fetch('/api/contact',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      credentials:'same-origin',
-      cache:'no-store',
-      body:JSON.stringify({
-        name:$('name').value,
-        email:$('email').value,
-        topic:$('topic').value,
-        message:$('message').value,
-        website:$('website').value,
-        acceptedPrivacy:$('privacy').checked,
-        turnstileToken:token
-      })
-    });
+    const response=provider==='formspree'
+      ? await fetch('https://formspree.io/f/'+formspreeId,{
+          method:'POST',
+          headers:{'Content-Type':'application/json','Accept':'application/json'},
+          body:JSON.stringify({
+            name:$('name').value,
+            email:$('email').value,
+            topic:$('topic').selectedOptions[0]?.textContent||'Question',
+            message:$('message').value,
+            _gotcha:$('website').value,
+            consent:$('privacy').checked?'oui':'non'
+          })
+        })
+      : await fetch('/api/contact',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          credentials:'same-origin',
+          cache:'no-store',
+          body:JSON.stringify({
+            name:$('name').value,
+            email:$('email').value,
+            topic:$('topic').value,
+            message:$('message').value,
+            website:$('website').value,
+            acceptedPrivacy:$('privacy').checked,
+            turnstileToken:token
+          })
+        });
     const data=await response.json().catch(()=>({}));
     if(!response.ok||!data.ok)throw new Error(data.error||'Envoi impossible.');
     form.reset();
@@ -147,7 +174,7 @@ form.addEventListener('submit',async event=>{
     notice(e.message||"L'envoi a échoué. Aucun message n'a été confirmé.");
   }finally{
     sending=false;token='';
-    if(window.turnstile)window.turnstile.reset('#turnstile');
+    if(provider==='cloudflare'&&window.turnstile)window.turnstile.reset('#turnstile');
     updateButton();
   }
 });
