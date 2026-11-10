@@ -30,3 +30,22 @@ test('aucune adresse privée, clé secrète, ni faux succès local dans le HTML'
   assert.match(page,/if\(!response\.ok\|\|!data\.ok\)throw/);
   assert.match(page,/Le formulaire n.est pas encore activé/);
 });
+
+
+test('alternative sans domaine : formulaire Formspree uniquement après configuration d’un identifiant valide',()=>{
+  assert.match(page,/<meta name="khelyia-formspree-id" content="">/);
+  assert.match(page,/const formspreeReady=\/\^\[a-zA-Z0-9\]\{8,16\}\$\/\.test\(formspreeId\)/);
+  assert.match(page,/https:\/\/formspree\.io\/f\/'\+formspreeId/);
+  assert.match(page,/provider='formspree'/);
+  assert.match(page,/send\.disabled=!ready\|\|/);
+  assert.match(page,/provider==='cloudflare'&&!token/);
+  assert.match(page,/30 jours/);
+  assert.doesNotMatch(page,/tijarashop@gmail\.com/i);
+});
+
+test('alternative Formspree : succès uniquement sur réponse OK du fournisseur',()=>{
+  assert.match(page,/if\(!response\.ok\|\|!data\.ok\)throw/);
+  assert.match(page,/Accept':'application\/json'/);
+  assert.match(page,/_gotcha:\$\('website'\)\.value/);
+  assert.match(page,/consent:\$\('privacy'\)\.checked/);
+});
