@@ -159,3 +159,16 @@ test('configuration manquante, saisie trop volumineuse et route inconnue : refus
   assert.equal((await call(request('/api/parent/not-found','GET',null,null),env)).status,404);
   assert.equal((await call(request('/api/parent/login','POST',{email:'not-an-email',password}),env)).status,400);
 });
+
+
+test('une nouvelle connexion révoque une ancienne session du même navigateur', async () => {
+  const env=await setup();
+  const first=await call(request('/api/parent/login','POST',{email,password}),env);
+  const oldCookie=first.headers.get('Set-Cookie').split(';')[0];
+  const second=await call(request('/api/parent/login','POST',{email,password},ORIGIN,oldCookie),env);
+  assert.equal(second.status,200);
+  const newCookie=second.headers.get('Set-Cookie').split(';')[0];
+  assert.notEqual(newCookie,oldCookie);
+  assert.equal((await call(request('/api/parent/me','GET',null,null,oldCookie),env)).status,401);
+  assert.equal((await call(request('/api/parent/me','GET',null,null,newCookie),env)).status,200);
+});
