@@ -20,3 +20,13 @@
 - Pull request en brouillon : https://github.com/tijarashop-afk/khelyia/pull/1 ; elle ne doit pas être fusionnée tant que la V3 n'est pas sécurisée et testée en bout en bout.
 - **GitHub Actions** : exécution « KhelyIA — vérifications » **terminée avec succès** sur la branche. Les tests automatisés fournissent un contrôle répétable, même sans hooks natifs dans le chat.
 - La publication Cloudflare V2.2 et la branche principale `main` restent inchangées.
+
+
+## 2026-11-10 — Continuation V3-03 : premières routes parent
+- Création de \`src/server/parent-api.mjs\` (authentification, session, déconnexion) et de \`functions/api/parent/[[path]].js\` (point d'entrée Cloudflare Pages, **pas déployé**).
+- Sécurité défensive : vérification stricte de l'Origin pour les requêtes mutantes, JSON limité à 4 Kio, cookies HttpOnly/Secure/SameSite, sessions hachées côté D1, expiration, révocation et rotation à la reconnexion, protection anti-bruteforce par catégories HMAC.
+- Les nouveaux tests Node testent connexion, session, refus non autorisé, déconnexion, expiration, CSRF, limitation des tentatives, requêtes paramétrées et rotation de session.
+- Tests de schéma D1/SQLite ajoutés en Python ; intégration à GitHub Actions.
+- **Intégration et qualification non terminées :** aucun système d'inscription/confirmation email, aucune création de compte réel, pas de contrôle d'accès aux notes côté serveur, pas de D1 de production, pas de test de performance Cloudflare Free.
+- Limite identifiée : requêtes Workers Free à 10 ms CPU ; vérifier le coût PBKDF2 avant déploiement.
+- Reprise : développer un flux d'inscription avec vérification d'email sans dépense puis migrer les données privées derrière API sécurisée ; conserver l'application V2.2 publique inchangée.
