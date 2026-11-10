@@ -189,6 +189,18 @@ async function notes(request,env,at) {
     ).bind(parent.id).all();
     return json({notes:rows.results||[]});
   }
+  if(request.method==='DELETE') {
+    const parsed=await readLimitedJson(request);
+    if(parsed.error)return parsed.error;
+    const id=parsed.value.id;
+    if(typeof id!=='string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+      return fail(400,'Identifiant de note invalide');
+    }
+    // Aucun identifiant de parent venant du navigateur ; suppression limitée au propriétaire.
+    await env.DB.prepare('DELETE FROM parent_notes WHERE id=? AND parent_id=?')
+      .bind(id,parent.id).run();
+    return empty(204);
+  }
   const parsed=await readLimitedJson(request);
   if(parsed.error)return parsed.error;
   const {subject,level,score}=parsed.value;
@@ -218,7 +230,7 @@ export async function handleParentApi(request,env,{now=Date.now}={}) {
     '/api/parent/login':['POST'],
     '/api/parent/logout':['POST'],
     '/api/parent/me':['GET'],
-    '/api/parent/notes':['GET','POST']
+    '/api/parent/notes':['GET','POST','DELETE']
   };
   if(!Object.hasOwn(endpoints,path))return fail(404,'Route inconnue');
   if(!endpoints[path].includes(method))return json({error:'Méthode non autorisée'},405,{'Allow':endpoints[path].join(', ')});
