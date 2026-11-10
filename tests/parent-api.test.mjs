@@ -13,6 +13,7 @@ class FakeD1 {
     this.parents = new Map();
     this.sessions = new Map();
     this.attempts = new Map();
+    this.notes = [];
     this.statements = [];
   }
   prepare(sql) {
@@ -36,6 +37,14 @@ class FakeD1 {
             }
             throw Error('SQL first inattendu: ' + sql);
           },
+          async all() {
+            if(sql.includes('FROM parent_notes')) {
+              const notes=db.notes.filter(n=>n.parent_id===args[0]);
+              notes.sort((a,b)=>b.recorded_at-a.recorded_at || b.id.localeCompare(a.id));
+              return {success:true,results:notes.slice(0,100).map(({parent_id,...rest})=>rest)};
+            }
+            throw Error('SQL all inattendu: '+sql);
+          },
           async run() {
             if (sql.startsWith('INSERT INTO parent_auth_attempts')) {
               const [key, stamp, cutoff1, cutoff2, cutoff3, blockedUntil] = args;
@@ -50,6 +59,11 @@ class FakeD1 {
             }
             if (sql.startsWith('DELETE FROM parent_auth_attempts')) {
               db.attempts.delete(args[0]); db.attempts.delete(args[1]);
+              return {success:true};
+            }
+            if (sql.startsWith('INSERT INTO parent_notes')) {
+              const [id,parent_id,subject,level,score,max_score,recorded_at]=args;
+              db.notes.push({id,parent_id,subject,level,score,max_score,recorded_at});
               return {success:true};
             }
             if (sql.startsWith('INSERT INTO parent_sessions')) {
@@ -218,4 +232,72 @@ test('les valeurs envoyées par les clients restent hors des chaînes SQL', asyn
     assert.ok(!row.sql.includes(email),'donnée privée insérée dans SQL');
     assert.ok(row.sql.includes('?'),'requête non paramétrée');
   }
+});
+
+
+test('lecture des notes : uniquement celles du parent authentifié', async () => {
+  const env=await setup();
+  env.DB.notes.push(
+    {id:'n1',parent_id:'family-1',subject:'maths',level:'CM1',score:17,max_score:20,recorded_at:now},
+    {id:'n2',parent_id:'family-2',subject:'anglais',level:'Sixième',score:4,max_score:20,recorded_at:now}
+  );
+  assert.equal((await call(request('/api/parent/notes','GET',null,null),env)).status,401);
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  const result=await call(request('/api/parent/notes?parent_id=family-2','GET',null,null,cookie),env);
+  assert.equal(result.status,200);
+  const body=await result.json();
+  assert.equal(body.notes.length,1);
+  assert.equal(body.notes[0].id,'n1');
+  assert.ok(!JSON.stringify(body).includes('family-2'));
+  assert.equal(env.DB.statements.at(-1).args[0],'family-1');
+});
+
+test('enregistrement des notes : propriétaire déterminé depuis la session, jamais depuis le client', async () => {
+  const env=await setup();
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  const res=await call(request('/api/parent/notes','POST',{
+    subject:'français',level:'CM1',score:16,parent_id:'family-2',child_name:'do not store'
+  },ORIGIN,cookie),env);
+  assert.equal(res.status,201);
+  const body=await res.json();
+  assert.match(body.id,/^[0-9a-f-]{36}$/i);
+  assert.equal(env.DB.notes.length,1);
+  assert.equal(env.DB.notes[0].parent_id,'family-1');
+  assert.equal(env.DB.notes[0].score,16);
+  assert.ok(!JSON.stringify(env.DB.notes).includes('do not store'));
+  assert.equal((await call(request('/api/parent/notes','GET',null,null,cookie),env)).status,200);
+});
+
+test('enregistrement des notes : requêtes non authentifiées ou hors origine bloquées', async () => {
+  const env=await setup();
+  assert.equal((await call(request('/api/parent/notes','POST',{
+    subject:'maths',level:'CP',score:15
+  }),env)).status,401);
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  assert.equal((await call(request('/api/parent/notes','POST',{
+    subject:'maths',level:'CP',score:15
+  },'https://evil.invalid',cookie),env)).status,403);
+  assert.equal(env.DB.notes.length,0);
+});
+
+test('les notes invalides sont rejetées sans écrire dans D1', async () => {
+  const env=await setup();
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  const invalid=[
+    {subject:'éducation',level:'CP',score:14},
+    {subject:'maths',level:'niveau-malformé',score:10},
+    {subject:'maths',level:'CP',score:-1},
+    {subject:'maths',level:'CP',score:21},
+    {subject:'maths',level:'CP',score:'18'},
+    {subject:'maths',level:'CP',score:12.5}
+  ];
+  for(const data of invalid) {
+    const res=await call(request('/api/parent/notes','POST',data,ORIGIN,cookie),env);
+    assert.equal(res.status,400);
+  }
+  assert.equal(env.DB.notes.length,0);
 });
