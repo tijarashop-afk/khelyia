@@ -1,5 +1,13 @@
 # KhelyIA — Page Contact et réception des messages par email
 
+## Configuration de réception effectuée (10 novembre 2026)
+- Adresse destinée à KhelyIA **fournie par le propriétaire**, stockée uniquement dans Cloudflare, pas dans GitHub.
+- Cloudflare Email Routing : destination **créée et indiquée vérifiée par l'API**.
+- Cloudflare Pages projet `khelyia` : variable serveur `CONTACT_TO_EMAIL` configurée comme `secret_text` en production.
+- **Envoi réel toujours inactif :** le compte Cloudflare ne dispose d'aucune zone/domaine expéditeur et les variables `CONTACT_FROM_EMAIL`, `EMAIL`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET` manquent.
+- Aucune modification de la version publique V2.2 ; aucun email de formulaire envoyé ou reçu pendant cette intervention.
+- Pour avancer sans frais, prévoir un domaine expéditeur utilisable par Cloudflare ou sélectionner une autre solution de réception qui protège les données des visiteurs.
+
 ## Livrables en branche V3 (pas encore publiés)
 - \`contact.html\` : page responsive violette/turquoise, accessible depuis deux liens de \`index.html\`.
 - \`src/server/contact-api.mjs\` et \`functions/api/contact.js\` : API qui transmet par email le message du visiteur à la réception KhelyIA.
