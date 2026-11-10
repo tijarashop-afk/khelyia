@@ -61,6 +61,11 @@ class FakeD1 {
               db.attempts.delete(args[0]); db.attempts.delete(args[1]);
               return {success:true};
             }
+            if (sql.startsWith('DELETE FROM parent_notes')) {
+              const [id,parentId]=args;
+              db.notes=db.notes.filter(n=>!(n.id===id && n.parent_id===parentId));
+              return {success:true};
+            }
             if (sql.startsWith('INSERT INTO parent_notes')) {
               const [id,parent_id,subject,level,score,max_score,recorded_at]=args;
               db.notes.push({id,parent_id,subject,level,score,max_score,recorded_at});
@@ -300,4 +305,31 @@ test('les notes invalides sont rejetées sans écrire dans D1', async () => {
     assert.equal(res.status,400);
   }
   assert.equal(env.DB.notes.length,0);
+});
+
+
+test('effacement : un parent peut supprimer sa note mais aucune note étrangère', async () => {
+  const env=await setup();
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  const created=await call(request('/api/parent/notes','POST',{
+    subject:'math',level:'CM2',score:14
+  },ORIGIN,cookie),env);
+  const ownId=(await created.json()).id;
+  env.DB.notes.push({id:'n_other',parent_id:'family-2',subject:'en',level:'3e',score:10,max_score:20,recorded_at:now});
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id:'n_other'},ORIGIN,cookie),env)).status,204);
+  assert.equal(env.DB.notes.length,2);
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id:ownId},ORIGIN,cookie),env)).status,204);
+  assert.equal(env.DB.notes.length,1);
+  assert.equal(env.DB.notes[0].id,'n_other');
+});
+
+test('effacement : sans session, sans origine valide ou avec ID incorrect, refus', async () => {
+  const env=await setup();
+  const id=crypto.randomUUID();
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id}),env)).status,401);
+  const login=await call(request('/api/parent/login','POST',{email,password}),env);
+  const cookie=login.headers.get('Set-Cookie').split(';')[0];
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id},'https://evil.invalid',cookie),env)).status,403);
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id:'not-a-uuid'},ORIGIN,cookie),env)).status,400);
 });
