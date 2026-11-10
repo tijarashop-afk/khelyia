@@ -31,7 +31,9 @@ Application d'aide aux devoirs en français, **du CP à la Terminale**. Interfac
 
 ## Commandes de test
 - **Tests automatisés du projet :** `node --test tests/*.test.mjs`
-- **Contrôle syntaxique du code serveur isolé :** `node --check src/server/parent-auth.mjs` (dès que ce fichier existe)
+- **Contrôle syntaxique des modules serveur :** `node --check src/server/parent-auth.mjs` et `node --check src/server/parent-api.mjs`
+- **Tests de schéma SQLite :** `python3 -m unittest discover -s tests -p 'test_*.py'`
+- **CI GitHub :** `.github/workflows/checks.yml` exécute les tests Node, Python et les contrôles syntaxiques.
 - **Déploiement :** Cloudflare Pages est actuellement alimenté par publication manuelle ; ne **pas** présumer que GitHub déploie automatiquement.
 
 ## Reprises et erreurs
