@@ -31,3 +31,10 @@ CP–Terminale ; français/mathématiques/anglais ; QCM facile/moyen/difficile ;
 
 ## Exclusions V3
 Ne pas intégrer l'IA Mistral, la photographie, les profils multiples, la progression adaptative ou les cours structurés : ces fonctions ont des versions ultérieures. Ne pas annoncer « sécurisé » si les données restent accessibles côté client sans autorisation serveur.
+
+## État d'implémentation au 10 novembre 2026
+- API parent login/me/logout et lecture/création/suppression des notes : disponible dans le code de la branche V3, non déployée.
+- Schéma SQLite des notes par propriétaire, et tests d'isolation inter-parent : réalisés.
+- Interface `parent-v3.html` : prototype d'accès authentifié séparé, non intégré au site public.
+- Inscription, confirmation email, base D1 hébergée, contrôles de performance et revue RGPD : non réalisés.
+- Aucun accès sécurisé en production n'est revendiqué. La V2.2 reste une démo.
