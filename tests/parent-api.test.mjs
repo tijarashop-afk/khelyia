@@ -316,12 +316,13 @@ test('effacement : un parent peut supprimer sa note mais aucune note étrangère
     subject:'math',level:'CM2',score:14
   },ORIGIN,cookie),env);
   const ownId=(await created.json()).id;
-  env.DB.notes.push({id:'n_other',parent_id:'family-2',subject:'en',level:'3e',score:10,max_score:20,recorded_at:now});
-  assert.equal((await call(request('/api/parent/notes','DELETE',{id:'n_other'},ORIGIN,cookie),env)).status,204);
+  const otherId=crypto.randomUUID();
+  env.DB.notes.push({id:otherId,parent_id:'family-2',subject:'en',level:'3e',score:10,max_score:20,recorded_at:now});
+  assert.equal((await call(request('/api/parent/notes','DELETE',{id:otherId},ORIGIN,cookie),env)).status,204);
   assert.equal(env.DB.notes.length,2);
   assert.equal((await call(request('/api/parent/notes','DELETE',{id:ownId},ORIGIN,cookie),env)).status,204);
   assert.equal(env.DB.notes.length,1);
-  assert.equal(env.DB.notes[0].id,'n_other');
+  assert.equal(env.DB.notes[0].id,otherId);
 });
 
 test('effacement : sans session, sans origine valide ou avec ID incorrect, refus', async () => {
