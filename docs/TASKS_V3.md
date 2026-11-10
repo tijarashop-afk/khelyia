@@ -7,8 +7,8 @@ Chaque tâche doit être terminée et testée avant de passer à la suivante. Le
 | V3-01 | Audit des données, surfaces et droits V2.2 | `docs/*`, `tests/*` | Inventaire et test de référence, sans changement de production |
 | V3-02 | Contrats de sécurité API + modèles de données | `docs/*`, `src/server/*`, `tests/*` | AuthN/AuthZ et séparation des familles vérifiables avec fausses données |
 | V3-03 | Comptes parent et sessions sécurisées (API connexion/déconnexion amorcée ; inscription et vérification email non faites) | `src/server/*`, `functions/*`, `tests/*`, `migrations/*` | Inscription/connexion/déconnexion/expiration testées, mot de passe jamais en clair |
-| V3-04 | Accès privé aux notes | `src/server/*`, `functions/*`, `tests/*`, `migrations/*` | API refuse une consultation non autorisée ou inter-famille |
-| V3-05 | Adapter l'interface Parent | `index.html`, `src/client/*`, `tests/*` | Accès parent via session serveur ; affichages enfants/QCM inchangés |
+| V3-04 | Accès privé aux notes (API serveur et tests réalisés ; intégration UI existante restante) | `src/server/*`, `functions/*`, `tests/*`, `migrations/*` | API refuse une consultation non autorisée ou inter-famille |
+| V3-05 | Adapter l'interface Parent (page de prévisualisation autonome créée ; intégration de `index.html` restante) | `index.html`, `parent-v3.html`, `src/client/*`, `tests/*` | Accès parent via session serveur ; affichages enfants/QCM inchangés |
 | V3-06 | Tests d'intégration, mobile, confidentialité et RGPD | `tests/*`, `docs/*` | Revue sécurité documentée et zéro régression critique |
 | V3-07 | Préparation de la PR, déploiement de prévisualisation et décision de publication | `docs/*` et config Cloudflare approuvée | Relecture + validation des dépendances et des risques |
 
