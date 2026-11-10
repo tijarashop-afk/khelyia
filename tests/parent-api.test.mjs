@@ -238,8 +238,8 @@ test('les valeurs envoyées par les clients restent hors des chaînes SQL', asyn
 test('lecture des notes : uniquement celles du parent authentifié', async () => {
   const env=await setup();
   env.DB.notes.push(
-    {id:'n1',parent_id:'family-1',subject:'maths',level:'CM1',score:17,max_score:20,recorded_at:now},
-    {id:'n2',parent_id:'family-2',subject:'anglais',level:'Sixième',score:4,max_score:20,recorded_at:now}
+    {id:'n1',parent_id:'family-1',subject:'math',level:'CM1',score:17,max_score:20,recorded_at:now},
+    {id:'n2',parent_id:'family-2',subject:'en',level:'6e',score:4,max_score:20,recorded_at:now}
   );
   assert.equal((await call(request('/api/parent/notes','GET',null,null),env)).status,401);
   const login=await call(request('/api/parent/login','POST',{email,password}),env);
@@ -258,7 +258,7 @@ test('enregistrement des notes : propriétaire déterminé depuis la session, ja
   const login=await call(request('/api/parent/login','POST',{email,password}),env);
   const cookie=login.headers.get('Set-Cookie').split(';')[0];
   const res=await call(request('/api/parent/notes','POST',{
-    subject:'français',level:'CM1',score:16,parent_id:'family-2',child_name:'do not store'
+    subject:'fr',level:'CM1',score:16,parent_id:'family-2',child_name:'do not store'
   },ORIGIN,cookie),env);
   assert.equal(res.status,201);
   const body=await res.json();
@@ -273,12 +273,12 @@ test('enregistrement des notes : propriétaire déterminé depuis la session, ja
 test('enregistrement des notes : requêtes non authentifiées ou hors origine bloquées', async () => {
   const env=await setup();
   assert.equal((await call(request('/api/parent/notes','POST',{
-    subject:'maths',level:'CP',score:15
+    subject:'math',level:'CP',score:15
   }),env)).status,401);
   const login=await call(request('/api/parent/login','POST',{email,password}),env);
   const cookie=login.headers.get('Set-Cookie').split(';')[0];
   assert.equal((await call(request('/api/parent/notes','POST',{
-    subject:'maths',level:'CP',score:15
+    subject:'math',level:'CP',score:15
   },'https://evil.invalid',cookie),env)).status,403);
   assert.equal(env.DB.notes.length,0);
 });
@@ -289,11 +289,11 @@ test('les notes invalides sont rejetées sans écrire dans D1', async () => {
   const cookie=login.headers.get('Set-Cookie').split(';')[0];
   const invalid=[
     {subject:'éducation',level:'CP',score:14},
-    {subject:'maths',level:'niveau-malformé',score:10},
-    {subject:'maths',level:'CP',score:-1},
-    {subject:'maths',level:'CP',score:21},
-    {subject:'maths',level:'CP',score:'18'},
-    {subject:'maths',level:'CP',score:12.5}
+    {subject:'math',level:'niveau-malformé',score:10},
+    {subject:'math',level:'CP',score:-1},
+    {subject:'math',level:'CP',score:21},
+    {subject:'math',level:'CP',score:'18'},
+    {subject:'math',level:'CP',score:12.5}
   ];
   for(const data of invalid) {
     const res=await call(request('/api/parent/notes','POST',data,ORIGIN,cookie),env);
