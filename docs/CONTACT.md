@@ -53,3 +53,20 @@ Documentation :
 
 ## Protection des mineurs
 Le formulaire est destiné aux adultes, rappelle de ne transmettre aucune donnée sensible d'enfant et demande un accord explicite pour être recontacté. Les messages passent par l'Email Service et la messagerie de réception ; ils ne sont **pas stockés par l'application** dans une base. Cela ne suffit pas, en soi, à garantir la conformité RGPD de l'ensemble de KhelyIA.
+
+
+## Solution sans nom de domaine : Formspree Free (recommandée provisoirement)
+
+**Pourquoi :** le compte Cloudflare actuel n'a aucun domaine expéditeur. Cloudflare Email Service exige un domaine configuré, même si l'adresse de destination Gmail est vérifiée. Formspree reçoit le formulaire depuis le navigateur et envoie les notifications à une adresse email choisie dans son tableau de bord. Aucun domaine KhelyIA n'est nécessaire.
+
+- Offre Formspree Free actuelle : **50 soumissions par mois**, sans carte bancaire ; archives conservées **30 jours**. Limite et conditions susceptibles d'évoluer : https://formspree.io/plans/
+- Le propriétaire crée un compte sur https://formspree.io/ avec son adresse de réception, puis un formulaire « KhelyIA — Contact » et confirme l'adresse email.
+- Formspree fournit un identifiant public de formulaire, par exemple `abcdefgh` (fictif). **L'identifiant réel n'a pas encore été communiqué.**
+- Insérer cet identifiant dans `contact.html`, balise `<meta name="khelyia-formspree-id" content="">`. Ne saisir ni adresse email privée, ni mot de passe, ni clé de compte.
+- Lorsque l'identifiant est valide, `contact.html` active **uniquement** le chemin Formspree, sans Turnstile Cloudflare, et conserve les contrôles HTML et le champ anti-bot `_gotcha`. La protection anti-spam et les paramètres de domaine autorisé se configurent dans Formspree.
+- Tant qu'aucun identifiant n'a été saisi, la page garde le circuit Cloudflare précédent, actuellement désactivé (pas d'expéditeur). Elle ne prétend pas envoyer de message.
+- Tester un message fictif depuis le site puis vérifier sa présence dans la boîte de réception Gmail et, au besoin, le dossier spam.
+- Mise à jour confidentialité obligatoire avant mise en production : Formspree traite les messages et peut en conserver l'historique **30 jours** en offre gratuite. Les visiteurs doivent être informés de ce prestataire et de la politique de conservation.
+
+Ce changement est isolé sur la branche de développement ; il n'affecte pas la V2.2 en ligne.
+
