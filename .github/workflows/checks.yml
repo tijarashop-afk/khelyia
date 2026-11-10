@@ -16,3 +16,5 @@ jobs:
           node-version: '22'
       - run: npm test
       - run: npm run check:auth
+      - run: node --check src/server/parent-api.mjs
+      - run: python3 -m unittest discover -s tests -p 'test_*.py'
