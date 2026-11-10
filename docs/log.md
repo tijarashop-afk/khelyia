@@ -15,3 +15,8 @@
 - Fichier `package.json` avec `npm test` et contrôle de syntaxe ; workflow GitHub Actions créé.
 - **Statut sécurité : V3 non terminée**, absence de routes API sécurisées, d'email validé, de protection anti-abus et de contrôle parent/élève côté serveur.
 - Prochaine tâche : V3-03, concevoir et tester inscription, connexion et déconnexion avec sessions persistées, puis vérification d'autorisation sur des données fictives.
+
+## 2026-11-10 — Vérification automatisée GitHub
+- Pull request en brouillon : https://github.com/tijarashop-afk/khelyia/pull/1 ; elle ne doit pas être fusionnée tant que la V3 n'est pas sécurisée et testée en bout en bout.
+- **GitHub Actions** : exécution « KhelyIA — vérifications » **terminée avec succès** sur la branche. Les tests automatisés fournissent un contrôle répétable, même sans hooks natifs dans le chat.
+- La publication Cloudflare V2.2 et la branche principale `main` restent inchangées.
