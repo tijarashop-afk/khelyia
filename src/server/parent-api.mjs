@@ -148,6 +148,13 @@ async function login(request,env,at) {
     return fail(403,'Compte en attente de vérification');
   }
   await resetFailures(env.DB,keys);
+  const previousToken=getToken(request);
+  if(previousToken) {
+    // Invalider une ancienne session lors d'un changement/rechargement de compte.
+    await env.DB.prepare(
+      'UPDATE parent_sessions SET revoked_at=? WHERE token_hash=? AND revoked_at IS NULL'
+    ).bind(at,await hashSessionToken(previousToken)).run();
+  }
   const {token,tokenHash}=await newSessionCredential();
   await env.DB.prepare(
     'INSERT INTO parent_sessions(token_hash,parent_id,created_at,expires_at,revoked_at) VALUES (?,?,?,?,NULL)'
