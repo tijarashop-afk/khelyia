@@ -30,3 +30,13 @@
 - **Intégration et qualification non terminées :** aucun système d'inscription/confirmation email, aucune création de compte réel, pas de contrôle d'accès aux notes côté serveur, pas de D1 de production, pas de test de performance Cloudflare Free.
 - Limite identifiée : requêtes Workers Free à 10 ms CPU ; vérifier le coût PBKDF2 avant déploiement.
 - Reprise : développer un flux d'inscription avec vérification d'email sans dépense puis migrer les données privées derrière API sécurisée ; conserver l'application V2.2 publique inchangée.
+
+
+## 2026-11-10 — Demande de page Contact avec réception par email
+- Formulaire `contact.html` créé, dans la charte violet/turquoise, accessible depuis le menu et le pied de page de `index.html`.
+- API `src/server/contact-api.mjs` et route Pages Function `functions/api/contact.js`. Transmission vers `CONTACT_TO_EMAIL` (paramètre serveur), par `env.EMAIL.send`, avec `Reply-To` du visiteur.
+- Protections : validation de taille et des valeurs, champ anti-bot caché, contrôle d'origine, token Turnstile vérifié côté serveur, contrôle du domaine et de l'action, aucun message conservé dans une base.
+- Ajout des tests `tests/contact-api.test.mjs` et `tests/contact-page.test.mjs`. Total désormais **44 tests** dans la suite Node + SQLite.
+- Conditions d'activation documentées dans `docs/CONTACT.md` : adresse de réception spécifique KhelyIA, expéditeur sur domaine autorisé, configuration Email Service et Turnstile, test de réception réelle.
+- **Aucun destinataire ni service email effectif configuré.** Formulaire non publié ; la V2.2 publique reste inchangée. Ne pas déclarer de messages réels envoyés ou reçus.
+- Des emails vers une destination vérifiée peuvent être gratuits sur Cloudflare Workers Free, selon la configuration, mais les envois à des adresses arbitraires relèvent de Workers Paid. **Ne pas souscrire à une offre payante sans accord.**
