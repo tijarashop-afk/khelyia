@@ -17,4 +17,6 @@ jobs:
       - run: npm test
       - run: npm run check:auth
       - run: node --check src/server/parent-api.mjs
+      - run: node --check src/server/contact-api.mjs
+      - run: node --check functions/api/contact.js
       - run: python3 -m unittest discover -s tests -p 'test_*.py'
