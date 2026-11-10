@@ -18,6 +18,15 @@
 - `tests/test_schema.py` : vérification du schéma sur SQLite en mémoire.
 - Cloudflare Free peut limiter le CPU à **10 ms par requête** : mesurer sur environnement isolé la faisabilité de PBKDF2 avec 310 000 itérations avant déploiement. Aucun achat ne doit être déclenché automatiquement.
 
+## Notes privées V3-04 — travaux déjà effectués
+- `migrations/0002_parent_notes.sql` : notes rattachées uniquement à un parent, matière, classe et note /20 ; pas d'identité d'enfant ; contraintes SQL.
+- `GET /api/parent/notes` : sélection limitée à l'identité du parent lue depuis la session.
+- `POST /api/parent/notes` : création limitée à la session parent ; `parent_id` fourni par le navigateur est ignoré.
+- `DELETE /api/parent/notes` : suppression limitée au parent authentifié et à l'identifiant UUID choisi.
+- `parent-v3.html` : page séparée de prévisualisation (connexion, lecture, création et suppression), sans secret et sans usage de `localStorage`. **Pas encore déployée**.
+- Attention : `index.html` V2.2 utilise toujours le stockage local ; donc la V3 n'est **pas sécurisée de bout en bout**.
+- Confirmation email : le Cloudflare Email Service n'autorise l'envoi arbitraire à tous les destinataires que via Workers Paid ; ne pas déclencher un service payant sans accord.
+
 ## À coder avant de qualifier V3 de sécurisée
 - Comptes parent : inscription avec vérification de l'adresse, connexion, réinitialisation.
 - Routes API, limitation anti-bruteforce / abus, revocation et expiration serveur des sessions.
