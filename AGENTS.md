@@ -43,7 +43,8 @@ Application d'aide aux devoirs en français, **du CP à la Terminale**. Interfac
 - Aucun destinataire d'email réel ou secret dans le code public ; utiliser des variables côté serveur.
 - Exiger vérification Turnstile côté serveur, validation des champs, preuve de consentement et expéditeur serveur fixe. Ne jamais accepter un champ `to` envoyé par le navigateur.
 - Ne jamais prétendre qu'un message a été envoyé si la liaison email a échoué.
-- Ne pas publier le formulaire comme opérationnel avant une confirmation de réception d'un email de test, une destination vérifiée et un domaine expéditeur autorisé.
+- Ne pas publier le formulaire comme opérationnel avant une confirmation de réception d'un email de test ; pour le circuit Cloudflare, destination vérifiée et domaine expéditeur autorisé ; pour le circuit sans domaine, compte Formspree/ID validé et notifications email vérifiées.
+- Voie sans domaine : `contact.html` utilise `meta[name="khelyia-formspree-id"]` pour basculer vers Formspree Free ; l'ID est public mais **jamais** l'adresse privée, le mot de passe ou les secrets. La notice doit informer de l'intervention de Formspree et de sa conservation limitée.
 - Limiter la collecte : formulaire réservé aux adultes, interdire le partage de données personnelles d'enfants.
 
 ## Reprises et erreurs
