@@ -38,6 +38,14 @@ Application d'aide aux devoirs en français, **du CP à la Terminale**. Interfac
 - La page `parent-v3.html` reste une **prévisualisation sur branche** : ne pas la brancher sur la version publique tant que les comptes parent ne sont pas opérationnels.
 - **Déploiement :** Cloudflare Pages est actuellement alimenté par publication manuelle ; ne **pas** présumer que GitHub déploie automatiquement.
 
+## Contact (fonctionnalité indépendante, en attente d'activation)
+- Fichiers : `contact.html`, `functions/api/contact.js`, `src/server/contact-api.mjs`, `tests/contact-*.test.mjs`. Lire `docs/CONTACT.md`.
+- Aucun destinataire d'email réel ou secret dans le code public ; utiliser des variables côté serveur.
+- Exiger vérification Turnstile côté serveur, validation des champs, preuve de consentement et expéditeur serveur fixe. Ne jamais accepter un champ `to` envoyé par le navigateur.
+- Ne jamais prétendre qu'un message a été envoyé si la liaison email a échoué.
+- Ne pas publier le formulaire comme opérationnel avant une confirmation de réception d'un email de test, une destination vérifiée et un domaine expéditeur autorisé.
+- Limiter la collecte : formulaire réservé aux adultes, interdire le partage de données personnelles d'enfants.
+
 ## Reprises et erreurs
 - Après deux échecs identiques, s'arrêter, analyser la cause, noter la leçon dans `docs/log.md` et améliorer l'instruction appropriée.
 - Le contexte durable du projet est **dans le dépôt**, pas uniquement dans la mémoire d'un modèle.
