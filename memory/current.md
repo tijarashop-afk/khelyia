@@ -25,3 +25,5 @@
 **Nouvelle page Contact :** `contact.html`, API `src/server/contact-api.mjs`, route `functions/api/contact.js`, tests et `docs/CONTACT.md` créés sur branche V3. Adresse de réception non définie, email non activé et page non publiée ; aucun message réel n'a été envoyé.
 
 **Sécurité actuelle :** site V2.2 non sécurisé côté parent. Notes privées V3-04 et prévisualisation parent codées sur la branche mais non activées en production. N'utiliser que des données fictives. Code V3 uniquement dans une pull request en brouillon, non fusionnée, non déployée.
+
+**Contact — destination confirmée :** l'adresse de réception choisie par l'utilisateur est enregistrée comme destination vérifiée dans Cloudflare et dans `CONTACT_TO_EMAIL` (paramètre serveur Pages en `secret_text`). Elle n'est pas committée dans GitHub. **L'envoi n'est PAS opérationnel :** aucun domaine expéditeur/zone Cloudflare, pas de `EMAIL`, pas de Turnstile, aucun test d'email réel. Il faut configurer un domaine d'envoi ou choisir un autre mécanisme compatible avec l'objectif gratuit avant de publier le formulaire.
