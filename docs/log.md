@@ -47,3 +47,10 @@
 - Variable `CONTACT_TO_EMAIL` enregistrée en `secret_text` sur le projet Pages `khelyia`, configuration de production ; aucune mise en ligne ni livraison d'email ne découle de cette étape.
 - Vérification du compte : **aucune zone/domaine configuré**. L'envoi reste bloqué faute de domaine expéditeur et du binding `EMAIL` ; configuration Turnstile également absente.
 - Ne pas proclamer le formulaire opérationnel. La V2.2 publique est inchangée. Prochaine étape : choisir/installer un domaine d'envoi compatible ou une solution gratuite alternative, puis configurer le widget antispam et tester la réception réelle.
+
+## 2026-11-10 — Alternative email sans domaine
+- Réponse utilisateur : aucun nom de domaine KhelyIA acheté à ce jour ; éviter tout achat pour le formulaire Contact.
+- Formspree Free étudié comme alternative : 50 messages/mois, notification vers Gmail, pas de domaine requis, compte utilisateur et confirmation email nécessaires.
+- `contact.html` accepte désormais un identifiant de formulaire public dans `meta[name="khelyia-formspree-id"]`, sans dégrader la voie Cloudflare ; les données transitent par Formspree si cette option est activée.
+- Tests `tests/contact-page.test.mjs` complétés ; politique de confidentialité mise à jour pour indiquer Formspree et ses 30 jours d'historique dans l'offre gratuite.
+- L'identifiant Formspree n'a pas encore été créé ou communiqué ; **aucune transmission de formulaire et aucun email reçu**. La V2.2 publique est inchangée.
