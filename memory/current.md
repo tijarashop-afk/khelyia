@@ -18,4 +18,8 @@
 - Déploiement actuel Cloudflare Pages manuel : GitHub n'est pas branché en publication automatique.
 - Fichiers de référence : `AGENTS.md`, `docs/spec.md`, `docs/TASKS_V3.md`, `docs/log.md`, `docs/ROADMAP.md`.
 
-**À faire en premier :** auditer les accès Parent/Enfant et la persistance V2.2 (V3-01), puis rédiger et tester les contrats serveur (V3-02).
+**Étapes réalisées :** audit V3-01 (`docs/AUDIT_V2_2.md`), primitives et 7 tests locaux V3-02 (`src/server/parent-auth.mjs`, `tests/parent-auth.test.mjs`), ébauche de schéma serveur (`migrations/0001_auth_v3.sql`). `npm test` est la commande de vérification.
+
+**Prochaine étape :** V3-03 inscription/connexion/déconnexion avec compte parent validé, sessions persistantes, protection anti-bruteforce, API avec autorisations, sans mise en production prématurée.
+
+**Sécurité actuelle :** l'application en ligne V2.2 demeure une **démo**. Aucune protection parent effective n'est activée, aucun élève réel ne doit être enregistré.
