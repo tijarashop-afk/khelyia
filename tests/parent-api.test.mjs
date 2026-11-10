@@ -38,7 +38,9 @@ class FakeD1 {
           },
           async run() {
             if (sql.startsWith('INSERT INTO parent_auth_attempts')) {
-              const [key, stamp, resetAt, cutoff, blockedUntil] = args;
+              const [key, stamp, cutoff1, cutoff2, cutoff3, blockedUntil] = args;
+              const cutoff = cutoff1;
+              if(cutoff2!==cutoff || cutoff3!==cutoff) throw Error('SQL throttle parameter mismatch');
               const prev = db.attempts.get(key);
               const reset = !prev || prev.started_at <= cutoff;
               const count = reset ? 1 : prev.failed_count + 1;
