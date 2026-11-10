@@ -40,3 +40,10 @@
 - Conditions d'activation documentées dans `docs/CONTACT.md` : adresse de réception spécifique KhelyIA, expéditeur sur domaine autorisé, configuration Email Service et Turnstile, test de réception réelle.
 - **Aucun destinataire ni service email effectif configuré.** Formulaire non publié ; la V2.2 publique reste inchangée. Ne pas déclarer de messages réels envoyés ou reçus.
 - Des emails vers une destination vérifiée peuvent être gratuits sur Cloudflare Workers Free, selon la configuration, mais les envois à des adresses arbitraires relèvent de Workers Paid. **Ne pas souscrire à une offre payante sans accord.**
+
+## 2026-11-10 — Adresse email de réception définie et Cloudflare vérifié
+- L'utilisateur a communiqué l'adresse destinée à recevoir les messages du formulaire Contact ; **ne pas écrire cette adresse dans GitHub ni la rendre publique**.
+- Destination Cloudflare Email Routing créée et **renvoyée comme vérifiée** dans le compte lié ; confirmée par un second appel de lecture.
+- Variable `CONTACT_TO_EMAIL` enregistrée en `secret_text` sur le projet Pages `khelyia`, configuration de production ; aucune mise en ligne ni livraison d'email ne découle de cette étape.
+- Vérification du compte : **aucune zone/domaine configuré**. L'envoi reste bloqué faute de domaine expéditeur et du binding `EMAIL` ; configuration Turnstile également absente.
+- Ne pas proclamer le formulaire opérationnel. La V2.2 publique est inchangée. Prochaine étape : choisir/installer un domaine d'envoi compatible ou une solution gratuite alternative, puis configurer le widget antispam et tester la réception réelle.
