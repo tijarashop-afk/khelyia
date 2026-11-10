@@ -172,3 +172,50 @@ test('une nouvelle connexion révoque une ancienne session du même navigateur',
   assert.equal((await call(request('/api/parent/me','GET',null,null,oldCookie),env)).status,401);
   assert.equal((await call(request('/api/parent/me','GET',null,null,newCookie),env)).status,200);
 });
+
+
+test('compte inexistant : aucune information de compte ne fuit', async () => {
+  const env=await setup();
+  const result=await call(request('/api/parent/login','POST',{
+    email:'inconnu@example.invalid',password
+  }),env);
+  assert.equal(result.status,401);
+  assert.deepEqual(await result.json(),{error:'Identifiants incorrects'});
+  assert.equal(env.DB.sessions.size,0);
+});
+
+test('les requêtes incorrectes sont filtrées avant accès aux identifiants', async () => {
+  const env=await setup();
+  const plain=new Request(ORIGIN+'/api/parent/login',{
+    method:'POST',headers:{Origin:ORIGIN,'Content-Type':'text/plain'},body:'hello'
+  });
+  assert.equal((await call(plain,env)).status,415);
+  const invalid=new Request(ORIGIN+'/api/parent/login',{
+    method:'POST',headers:{Origin:ORIGIN,'Content-Type':'application/json'},body:'{not-json'
+  });
+  assert.equal((await call(invalid,env)).status,400);
+  assert.equal((await call(request('/api/parent/login','GET',null,null),env)).status,405);
+  assert.equal(env.DB.sessions.size,0);
+});
+
+test('les tentatives de connexion expirent après la fenêtre de blocage', async () => {
+  const env=await setup();
+  for(let i=0;i<5;i++) {
+    await call(request('/api/parent/login','POST',{email,password:'WrongPassword2026!'}),env);
+  }
+  const after=await handleParentApi(request('/api/parent/login','POST',{email,password}),env,{
+    now:()=>now+16*60*1000
+  });
+  assert.equal(after.status,200);
+  assert.equal(env.DB.sessions.size,1);
+});
+
+test('les valeurs envoyées par les clients restent hors des chaînes SQL', async () => {
+  const env=await setup();
+  await call(request('/api/parent/login','POST',{email,password}),env);
+  assert.ok(env.DB.statements.length>0);
+  for(const row of env.DB.statements) {
+    assert.ok(!row.sql.includes(email),'donnée privée insérée dans SQL');
+    assert.ok(row.sql.includes('?'),'requête non paramétrée');
+  }
+});
