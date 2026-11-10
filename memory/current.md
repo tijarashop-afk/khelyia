@@ -20,6 +20,8 @@
 
 **Étapes réalisées :** V3-01 audit ; V3-02 primitives et 7 tests ; V3-03 partielle : routes serveur login/me/logout, contrôle Origin, anti-bruteforce, sessions D1 hachées et invalidées ; tests supplémentaires Node + 4 tests SQL SQLite. GitHub Actions validé. Aucune connexion parent de production activée.
 
-**Prochaine étape :** terminer V3-03 : inscription parent + vérification d'email et récupération d'accès, provisionner une base D1 de test, mesurer le coût PBKDF2 sur Workers Free avant toute ouverture ; puis contrôle de l'accès aux notes V3-04.
+**Prochaine étape :** achever V3-03 (inscription, email vérifié, récupération d'accès), configurer D1 en test et mesurer le coût du PBKDF2 ; intégrer ensuite les notes V3-04 dans l'app principale. **Demande complémentaire Contact :** obtenir une adresse de réception expressément choisie pour KhelyIA, vérifier une destination email gratuite, configurer Turnstile et tester l'envoi avant de publier la page.
 
-**Sécurité actuelle :** site V2.2 non sécurisé côté parent. N'utiliser que des données fictives. Code V3 uniquement dans une pull request en brouillon, non fusionnée, non déployée.
+**Nouvelle page Contact :** `contact.html`, API `src/server/contact-api.mjs`, route `functions/api/contact.js`, tests et `docs/CONTACT.md` créés sur branche V3. Adresse de réception non définie, email non activé et page non publiée ; aucun message réel n'a été envoyé.
+
+**Sécurité actuelle :** site V2.2 non sécurisé côté parent. Notes privées V3-04 et prévisualisation parent codées sur la branche mais non activées en production. N'utiliser que des données fictives. Code V3 uniquement dans une pull request en brouillon, non fusionnée, non déployée.
