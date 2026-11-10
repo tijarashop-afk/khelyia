@@ -1,0 +1,11 @@
+{
+  "name": "khelyia",
+  "version": "2.2.0-v3-foundation",
+  "private": true,
+  "type": "module",
+  "description": "KhelyIA V2.2 public + fondations V3 sécurisation espace parent",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check:auth": "node --check src/server/parent-auth.mjs"
+  }
+}

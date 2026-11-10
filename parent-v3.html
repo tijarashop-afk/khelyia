@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#5541DB">
+<title>KhelyIA — Espace parent V3 (prévisualisation)</title>
+<style>
+:root { color-scheme:light; --violet:#5541DB; --teal:#13B7AC; --ink:#20233D; --muted:#656B82; --line:#E8EAF2; --bg:#F7F8FD; font-family:Inter,system-ui,Arial,sans-serif;}
+* { box-sizing:border-box; }
+body { margin:0; color:var(--ink); background:var(--bg); }
+header { background:white; border-bottom:1px solid var(--line); }
+header .inner { max-width:860px; margin:auto; padding:18px 22px; display:flex; gap:14px; align-items:center; }
+.logo { width:44px; height:44px; display:grid; place-items:center; border-radius:13px; color:white; font-size:24px; font-weight:800; background:var(--violet); }
+header strong { display:block; font-size:19px; }
+header small { color:var(--muted); }
+main { max-width:860px; margin:32px auto; padding:0 18px 50px; }
+.panel { background:white; border:1px solid var(--line); border-radius:18px; padding:26px; box-shadow:0 8px 24px #2724510a; }
+h1 { margin:0 0 6px; font-size:clamp(23px,4vw,32px); }
+h2 { font-size:20px; }
+p { line-height:1.6; }
+.muted { color:var(--muted); }
+.alert { border-left:4px solid var(--teal); background:#F0FDFB; border-radius:8px; padding:12px 14px; font-size:14px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:16px; }
+label { display:block; margin:14px 0 6px; font-weight:650; font-size:14px; }
+input, select { width:100%; border:1px solid #BFC3D4; border-radius:10px; padding:13px; background:white; color:var(--ink); font:inherit; }
+input:focus,select:focus,button:focus-visible { outline:3px solid #a8a0ff; outline-offset:2px; }
+button { min-height:46px; border:0; border-radius:11px; padding:11px 20px; font:inherit; font-weight:700; cursor:pointer; }
+button:disabled { cursor:progress; opacity:.55; }
+.primary { color:white; background:var(--violet); margin-top:20px; }
+.secondary { color:var(--violet); background:#f1efff; }
+.danger { color:#A3213A; background:#FCEEF1; }
+.topline { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+.status { min-height:26px; font-size:14px; color:#4C3BB9; margin:10px 0; }
+.status.error { color:#A3213A; }
+.notes { border-top:1px solid var(--line); margin-top:16px; }
+.note { padding:12px 0; display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+.note small { display:block; color:var(--muted); margin-top:3px; }
+.note strong { color:var(--violet); }
+.note button { min-height:36px; }
+footer { text-align:center; font-size:13px; color:var(--muted); padding:18px; }
+[hidden] { display:none!important; }
+@media(max-width:480px) { main {margin:16px auto;} .panel{padding:18px;} .note{align-items:flex-start;} }
+</style>
+</head>
+<body>
+<header><div class="inner"><div class="logo" aria-hidden="true">K</div><div><strong>KhelyIA</strong><small>Espace parent sécurisé — prévisualisation V3</small></div></div></header>
+<main>
+  <p class="alert">Version de développement non publiée : ne saisir que des comptes et des notes fictifs. L'inscription et la vérification d'email ne sont pas encore disponibles.</p>
+  <section id="login-panel" class="panel" hidden aria-labelledby="login-title">
+    <h1 id="login-title">Connexion parent</h1>
+    <p class="muted">Les informations parent sont vérifiées par le serveur, pas par le navigateur.</p>
+    <form id="login-form">
+      <label for="email">Adresse email</label>
+      <input id="email" name="email" type="email" autocomplete="username" maxlength="254" required>
+      <label for="password">Mot de passe</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <button type="submit" class="primary" id="login-button">Se connecter</button>
+    </form>
+  </section>
+  <section id="parent-panel" class="panel" hidden aria-labelledby="parent-title">
+    <div class="topline"><div><h1 id="parent-title">Votre espace parent</h1><p id="parent-email" class="muted"></p></div><button id="logout" class="secondary" type="button">Se déconnecter</button></div>
+    <h2>Résultats scolaires</h2>
+    <p class="muted">Résultats associés uniquement à votre session. Les profils multiples seront ajoutés en V4.</p>
+    <div id="note-list" class="notes" aria-live="polite"></div>
+    <h2>Ajouter un résultat de test</h2>
+    <form id="note-form">
+      <div class="grid">
+        <div><label for="subject">Matière</label><select id="subject" required><option value="math">Mathématiques</option><option value="fr">Français</option><option value="en">Anglais</option></select></div>
+        <div><label for="level">Classe</label><select id="level" required><option>CP</option><option>CE1</option><option>CE2</option><option>CM1</option><option>CM2</option><option>6e</option><option>5e</option><option>4e</option><option>3e</option><option>Seconde</option><option>Première</option><option>Terminale</option></select></div>
+        <div><label for="score">Note sur 20</label><input id="score" type="number" min="0" max="20" step="1" value="15" required></div>
+      </div>
+      <button type="submit" class="primary" id="save-button">Ajouter le résultat</button>
+    </form>
+  </section>
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+</main>
+<footer>KhelyIA V3 — Prototype à données fictives uniquement</footer>
+<script type="module">
+const $=id=>document.getElementById(id);
+const subjects={math:'Mathématiques',fr:'Français',en:'Anglais'};
+let working=false;
+function status(text='',error=false){$('status').textContent=text;$('status').classList.toggle('error',error);}
+function view(authenticated){
+  $('login-panel').hidden=authenticated;
+  $('parent-panel').hidden=!authenticated;
+}
+async function api(path,{method='GET',data}={}){
+  const response=await fetch('/api/parent/'+path,{
+    method,credentials:'same-origin',cache:'no-store',
+    headers:data?{'Content-Type':'application/json'}:{},
+    body:data?JSON.stringify(data):undefined
+  });
+  if(response.status===204)return {};
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok){throw new Error(body.error||'Service indisponible');}
+  return body;
+}
+async function listNotes(){
+  const {notes}=await api('notes');
+  const container=$('note-list');
+  container.replaceChildren();
+  if(!notes.length){const p=document.createElement('p');p.className='muted';p.textContent='Aucun résultat enregistré pour le moment.';container.append(p);return;}
+  for(const note of notes) {
+    const item=document.createElement('div');item.className='note';
+    const info=document.createElement('div');
+    const title=document.createElement('strong');title.textContent=(subjects[note.subject]||'Matière')+' · '+note.score+'/20';
+    const sub=document.createElement('small');sub.textContent=note.level;
+    info.append(title,sub);
+    const remove=document.createElement('button');remove.type='button';remove.className='danger';remove.textContent='Supprimer';remove.setAttribute('aria-label','Supprimer la note '+note.score+' sur 20');
+    remove.addEventListener('click',async()=>{
+      if(working||!confirm('Supprimer ce résultat ?'))return;
+      working=true;remove.disabled=true;
+      try{await api('notes',{method:'DELETE',data:{id:note.id}});await listNotes();status('Résultat supprimé.');}
+      catch{status('Suppression impossible.',true);}
+      finally{working=false;remove.disabled=false;}
+    });
+    item.append(info,remove);container.append(item);
+  }
+}
+async function restore(){
+  try{
+    const {parent}=await api('me');
+    $('parent-email').textContent=parent.email;
+    view(true);await listNotes();status('');
+  }catch{view(false);status('');}
+}
+$('login-form').addEventListener('submit',async event=>{
+  event.preventDefault();if(working)return;
+  working=true;$('login-button').disabled=true;status('Vérification en cours…');
+  try{
+    await api('login',{method:'POST',data:{email:$('email').value,password:$('password').value}});
+    $('password').value='';await restore();
+  }catch(error){status(error.message||'Connexion impossible.',true);}
+  finally{working=false;$('login-button').disabled=false;}
+});
+$('logout').addEventListener('click',async()=>{
+  if(working)return;
+  working=true;try{await api('logout',{method:'POST',data:{}});$('password').value='';view(false);status('Déconnexion effectuée.');}
+  catch{status('Déconnexion impossible.',true);}
+  finally{working=false;}
+});
+$('note-form').addEventListener('submit',async event=>{
+  event.preventDefault();if(working)return;
+  working=true;$('save-button').disabled=true;
+  try{
+    await api('notes',{method:'POST',data:{subject:$('subject').value,level:$('level').value,score:Number($('score').value)}});
+    await listNotes();status('Résultat enregistré.');
+  }catch{status('Enregistrement impossible.',true);}
+  finally{working=false;$('save-button').disabled=false;}
+});
+restore();
+</script>
+</body>
+</html>
