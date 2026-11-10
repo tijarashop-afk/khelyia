@@ -18,8 +18,8 @@
 - Déploiement actuel Cloudflare Pages manuel : GitHub n'est pas branché en publication automatique.
 - Fichiers de référence : `AGENTS.md`, `docs/spec.md`, `docs/TASKS_V3.md`, `docs/log.md`, `docs/ROADMAP.md`.
 
-**Étapes réalisées :** audit V3-01 (`docs/AUDIT_V2_2.md`), primitives et 7 tests locaux V3-02 (`src/server/parent-auth.mjs`, `tests/parent-auth.test.mjs`), ébauche de schéma serveur (`migrations/0001_auth_v3.sql`). `npm test` est la commande de vérification.
+**Étapes réalisées :** V3-01 audit ; V3-02 primitives et 7 tests ; V3-03 partielle : routes serveur login/me/logout, contrôle Origin, anti-bruteforce, sessions D1 hachées et invalidées ; tests supplémentaires Node + 4 tests SQL SQLite. GitHub Actions validé. Aucune connexion parent de production activée.
 
-**Prochaine étape :** V3-03 inscription/connexion/déconnexion avec compte parent validé, sessions persistantes, protection anti-bruteforce, API avec autorisations, sans mise en production prématurée.
+**Prochaine étape :** terminer V3-03 : inscription parent + vérification d'email et récupération d'accès, provisionner une base D1 de test, mesurer le coût PBKDF2 sur Workers Free avant toute ouverture ; puis contrôle de l'accès aux notes V3-04.
 
-**Sécurité actuelle :** l'application en ligne V2.2 demeure une **démo**. Aucune protection parent effective n'est activée, aucun élève réel ne doit être enregistré.
+**Sécurité actuelle :** site V2.2 non sécurisé côté parent. N'utiliser que des données fictives. Code V3 uniquement dans une pull request en brouillon, non fusionnée, non déployée.
