@@ -3,6 +3,7 @@
 Tests sur données fictives uniquement. Ne déploie pas et n'initialise pas D1.
 """
 import sqlite3
+import re
 import unittest
 from pathlib import Path
 
@@ -76,6 +77,29 @@ class ParentSchemaTests(unittest.TestCase):
         )
         self.assertIsNone(self.db.execute(sql, ("fakehash", 200)).fetchone())
 
+
+    def test_throttle_upsert_is_valid_sqlite_and_resets_after_window(self):
+        api = (Path(__file__).resolve().parents[1] / "src/server/parent-api.mjs").read_text(encoding="utf-8")
+        sql = re.search(r"const sql=`([^`]+)`", api, re.DOTALL)
+        self.assertIsNotNone(sql, "requête de limitation des tentatives introuvable")
+        query = sql.group(1)
+        stamp = 10000000
+        cutoff = stamp - 900000
+        for attempt in range(1, 6):
+            self.db.execute(query, ("bucket-test-fictif", stamp, cutoff, cutoff, cutoff, stamp+900000))
+            count, blocked = self.db.execute(
+                "SELECT failed_count,blocked_until FROM parent_auth_attempts WHERE opaque_bucket=?",
+                ("bucket-test-fictif",)
+            ).fetchone()
+            self.assertEqual(count, attempt)
+            self.assertEqual(blocked, stamp+900000 if attempt >= 5 else None)
+        later = stamp+900001
+        expiry = later-900000
+        self.db.execute(query, ("bucket-test-fictif", later, expiry, expiry, expiry, later+900000))
+        self.assertEqual(
+            self.db.execute("SELECT failed_count,blocked_until FROM parent_auth_attempts").fetchone(),
+            (1, None),
+        )
 
 if __name__ == "__main__":
     unittest.main()
