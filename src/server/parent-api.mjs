@@ -163,15 +163,44 @@ async function login(request,env,at) {
     'Set-Cookie':sessionCookie(token)
   });
 }
-async function me(request,env,at) {
+const VALID_SUBJECTS = new Set(['math','fr','en']);
+const VALID_LEVELS = new Set(['CP','CE1','CE2','CM1','CM2','6e','5e','4e','3e','Seconde','Première','Terminale']);
+
+async function authenticatedParent(request,env,at) {
   const token=getToken(request);
-  if(!token)return fail(401,'Connexion requise');
+  if(!token)return null;
   const hash=await hashSessionToken(token);
-  const parent=await env.DB.prepare(
+  return env.DB.prepare(
     'SELECT p.id,p.email_normalized FROM parent_sessions s JOIN parents p ON s.parent_id=p.id WHERE s.token_hash=? AND s.revoked_at IS NULL AND s.expires_at>? AND p.email_verified_at IS NOT NULL LIMIT 1'
   ).bind(hash,at).first();
+}
+async function me(request,env,at) {
+  const parent=await authenticatedParent(request,env,at);
   if(!parent)return fail(401,'Connexion requise');
   return json({parent:{id:parent.id,email:parent.email_normalized}});
+}
+async function notes(request,env,at) {
+  const parent=await authenticatedParent(request,env,at);
+  if(!parent)return fail(401,'Connexion requise');
+  if(request.method==='GET') {
+    // Sélection volontairement limitée au compte issu de la session.
+    const rows=await env.DB.prepare(
+      'SELECT id,subject,level,score,max_score,recorded_at FROM parent_notes WHERE parent_id=? ORDER BY recorded_at DESC, id DESC LIMIT 100'
+    ).bind(parent.id).all();
+    return json({notes:rows.results||[]});
+  }
+  const parsed=await readLimitedJson(request);
+  if(parsed.error)return parsed.error;
+  const {subject,level,score}=parsed.value;
+  if(!VALID_SUBJECTS.has(subject) || !VALID_LEVELS.has(level)
+     || !Number.isInteger(score) || score<0 || score>20) {
+    return fail(400,'Note, matière ou niveau invalide');
+  }
+  const id=crypto.randomUUID();
+  await env.DB.prepare(
+    'INSERT INTO parent_notes(id,parent_id,subject,level,score,max_score,recorded_at) VALUES(?,?,?,?,?,?,?)'
+  ).bind(id,parent.id,subject,level,score,20,at).run();
+  return json({id},201);
 }
 async function logout(request,env,at) {
   const token=getToken(request);
@@ -185,15 +214,21 @@ async function logout(request,env,at) {
 export async function handleParentApi(request,env,{now=Date.now}={}) {
   const path=new URL(request.url).pathname;
   const method=request.method.toUpperCase();
-  const endpoints={'/api/parent/login':'POST','/api/parent/logout':'POST','/api/parent/me':'GET'};
-  if(!(path in endpoints))return fail(404,'Route inconnue');
-  if(method!==endpoints[path])return json({error:'Méthode non autorisée'},405,{'Allow':endpoints[path]});
+  const endpoints={
+    '/api/parent/login':['POST'],
+    '/api/parent/logout':['POST'],
+    '/api/parent/me':['GET'],
+    '/api/parent/notes':['GET','POST']
+  };
+  if(!Object.hasOwn(endpoints,path))return fail(404,'Route inconnue');
+  if(!endpoints[path].includes(method))return json({error:'Méthode non autorisée'},405,{'Allow':endpoints[path].join(', ')});
   if(method!=='GET' && !sameOrigin(request))return fail(403,'Origine non autorisée');
   if(!configured(env))return fail(503,'Service parent indisponible');
   try {
     const at=now();
     if(path==='/api/parent/login')return await login(request,env,at);
     if(path==='/api/parent/logout')return await logout(request,env,at);
+    if(path==='/api/parent/notes')return await notes(request,env,at);
     return await me(request,env,at);
   }catch(error) {
     // Les erreurs détaillées ne doivent pas être exposées aux navigateurs.
